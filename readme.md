@@ -2,7 +2,7 @@
 The Parse Server instance for Island.
 
 ## Parse Server Intro
-Parse Server is 
+Parse Server is a backend platform written in Node that can be deployed anywhere and includes out of the box support for common things like object storage, push notifications, basic authentication, file storage, etc. It's backed by MongoDB and you can use a variety of solutions for large file storage.
 * [Parse Platform Website](https://parseplatform.org)
 * [Android Guide](https://docs.parseplatform.org/android/guide/)
 * [iOS Guide](https://docs.parseplatform.org/ios/guide/)
