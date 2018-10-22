@@ -5,6 +5,7 @@ require('dotenv').load();
 // Imports
 import express from 'express';
 import { ParseServer } from 'parse-server';
+import * as path from 'path';
 
 
 // Load optional config vars from process.env.
@@ -36,13 +37,14 @@ shouldAbort && process.abort();
 
 // Hardcoded config vars. These aren't meant to change, they're just in separate variables for documentation / object shorthand syntax.
 const allowClientClassCreation = false;
+const cloud = path.join(__dirname, 'cloud/main.js');
 const objectIdSize = 16;
 const revokeSessionOnPasswordReset = false;
 
 
 // Set up server and mount.
 const server = express();
-const api = new ParseServer({ allowClientClassCreation, appId, databaseURI, logLevel, masterKey, objectIdSize, revokeSessionOnPasswordReset, serverURL });
+const api = new ParseServer({ allowClientClassCreation, appId, cloud, databaseURI, logLevel, masterKey, objectIdSize, revokeSessionOnPasswordReset, serverURL });
 
 server.use(mountPoint, api);
 server.listen(port, () => {
