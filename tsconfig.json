@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
     "strict": true,
     "noImplicitAny": true,
@@ -24,6 +24,6 @@
     "types/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules/**/*"
   ]
 }
