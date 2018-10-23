@@ -40,12 +40,11 @@ define('requestVerificationCode', async (request) => {
         await privateData.save(null, { useMasterKey: true });
     }
 
-    await sendSMS(phoneNumber, `Your verification code for ${config.appName} is ${verificationCode}.`);
-
     // This makes testing easier; you don't need to wait for the SMS.
     if (config.environment == 'DEV') {
         return verificationCode;
     } else {
+        await sendSMS(phoneNumber, `Your verification code for ${config.appName} is ${verificationCode}.`);
         return 'Code sent.'
     }
 });
