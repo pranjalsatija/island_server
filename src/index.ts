@@ -1,52 +1,58 @@
-// Load .env if needed.
-require('dotenv').load();
+import * as config from './config';
+import * as log from './logger';
 
-
-// Imports
 import express from 'express';
+import { default as ParseDashboard } from 'parse-dashboard';
 import { ParseServer } from 'parse-server';
 import * as path from 'path';
 
-
-// Load optional config vars from process.env.
-function missingOptionalConfig<T>(parameter: string, defaultValue: T): T {
-    console.warn(`[island_server] WARNING: Missing \`${parameter}\`, defaulting to \'${defaultValue}\'...`);
-    return defaultValue;
-}
-
-const databaseURI = process.env.DATABASE_URI || missingOptionalConfig('DATABASE_URI', 'mongodb://localhost:27017/dev');
-const logLevel = process.env.LOG_LEVEL || missingOptionalConfig('LOG_LEVEL', 'verbose');
-const mountPoint = process.env.MOUNT_POINT || missingOptionalConfig('MOUNT_POINT', '/parse');
-const port = process.env.PORT || missingOptionalConfig('PORT', 1337);
-
-
-// Load required config vars from process.env.
-let shouldAbort = false;
-
-function missingRequiredConfig(parameter: string) {
-    console.error(`[island_server] ERROR: Missing \`${parameter}\`. Please provide it through an environment variable or a .env file.`);
-    shouldAbort = true;
-}
-
-const appId = process.env.APP_ID || missingRequiredConfig('APP_ID');
-const masterKey = process.env.MASTER_KEY || missingRequiredConfig('MASTER_KEY');
-const serverURL = `http://localhost:${port}${mountPoint}`;
-
-shouldAbort && process.abort();
-
-
-// Hardcoded config vars. These aren't meant to change, they're just in separate variables for documentation / object shorthand syntax.
-const allowClientClassCreation = false;
+// Hardcoded config vars.
+const allowClientClassCreation = (config.environment == 'DEV');
 const cloud = path.join(__dirname, 'cloud/main.js');
+const cluster = true;
 const objectIdSize = 16;
 const revokeSessionOnPasswordReset = false;
 
+const dashboardURL = `http://localhost:${config.port}${config.dashboardMountPoint}`;
+const serverURL = `http://localhost:${config.port}${config.mountPoint}`;
 
-// Set up server and mount.
+// Configure dashboard and Express server.
 const server = express();
-const api = new ParseServer({ allowClientClassCreation, appId, cloud, databaseURI, logLevel, masterKey, objectIdSize, revokeSessionOnPasswordReset, serverURL });
+if (config.environment == 'DEV') {
+    log.info(`DEV environment detected. Setting up dashboard at ${dashboardURL}.`);
+    const dashboard = ParseDashboard({
+        // apps: [{ serverURL, appId, masterKey, appName }]
+        apps: [
+            {
+                serverURL,
+                appId: config.appId,
+                masterKey: config.masterKey,
+                appName: config.appName,
+            }
+        ]
+    });
 
-server.use(mountPoint, api);
-server.listen(port, () => {
-    console.log(`Listening at ${serverURL}.`);
+    server.use('/dashboard', dashboard);
+} else {
+    log.info(`Detected NODE_ENV ${config.environment}. Disabling dashboard.`);
+}
+
+// Configure API.
+const api = new ParseServer({ 
+    allowClientClassCreation, 
+    appId: config.appId,
+    cloud,
+    cluster,
+    databaseURI: config.databaseURI,
+    logLevel: config.logLevel,
+    masterKey: config.masterKey,
+    objectIdSize,
+    revokeSessionOnPasswordReset,
+    serverURL
+});
+
+server.use(config.mountPoint, api);
+
+server.listen(config.port, () => {
+    log.info(`Listening at ${serverURL}.`);
 });
