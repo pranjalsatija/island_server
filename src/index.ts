@@ -30,7 +30,7 @@ if (config.environment == 'DEV') {
                 appName: config.appName,
             }
         ]
-    });
+    }, { allowInsecureHTTP: true });
 
     server.use('/dashboard', dashboard);
 } else {
