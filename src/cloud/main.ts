@@ -52,7 +52,7 @@ define('requestVerificationCode', async (request) => {
 define('completePhoneVerification', async (request) => {
     const verificationCode = request.params.verificationCode;
     if (!verificationCode) {
-        throw ParseError(ErrorCodes.badRequest, 'Missing Verification Code', 'Please provide a value for `verificationCode`.');
+        throw ParseError(ErrorCodes.badRequest, 'Missing Verification Code', 'Please provide a verification code.');
     }
 
     const phoneNumber = validatePhoneNumber(request.params.phoneNumber, request.params.region);

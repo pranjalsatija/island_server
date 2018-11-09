@@ -32,11 +32,11 @@ export function validatePhoneNumber(phoneNumber: any, region: any) {
     const badPhoneNumberError = ParseError(ErrorCodes.badRequest, 'Invalid Phone Number', `The phone number '${phoneNumber}' is invalid for the region '${region}'.`);
 
     if (!phoneNumber) {
-        throw ParseError(ErrorCodes.badRequest, 'Missing Phone Number', 'Please provide a value for `phoneNumber`.');
+        throw ParseError(ErrorCodes.badRequest, 'Missing Phone Number', 'Please provide a phone number.');
     }
 
     if (!region) {
-        throw ParseError(ErrorCodes.badRequest, 'Missing Region', 'Please provide a value for `region`.');
+        throw ParseError(ErrorCodes.badRequest, 'Missing Region', 'Please provide a region.');
     }
 
     const phoneNumberFormatter = PhoneNumberUtil.getInstance();
