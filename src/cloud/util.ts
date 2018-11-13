@@ -19,6 +19,11 @@ export function ParseError(code: any, error: any, description: any): any {
 
 
 // Cloud Code
+export function beforeSave(type: any, fxn: (request: Parse.Cloud.FunctionRequest) => any) {
+    log.verbose(`Defining beforeSave hook for ${type}...`);
+    Parse.Cloud.beforeSave(type, fxn);
+}
+
 export function define(name: string, fxn: (request: Parse.Cloud.FunctionRequest) => any) {
     log.verbose(`Defining /functions/${name}.`);
     Parse.Cloud.define(name, fxn);

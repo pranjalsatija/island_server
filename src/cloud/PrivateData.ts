@@ -29,5 +29,3 @@ export default class PrivateData extends Parse.Object {
         this.set('user', newValue);
     }
 }
-
-Parse.Object.registerSubclass('PrivateData', PrivateData);

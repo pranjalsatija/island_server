@@ -1,9 +1,13 @@
 import * as config from '../config';
-import { define, ErrorCodes, validatePhoneNumber, sendSMS, ParseError } from './util';
+import { beforeSave, define, ErrorCodes, validatePhoneNumber, sendSMS, ParseError } from './util';
+import { default as Profile } from './Profile';
 import { default as PrivateData } from './PrivateData';
 
 import { randomBytes } from 'crypto';
 import { generate as randomString } from 'randomstring';
+
+Parse.Object.registerSubclass('PrivateData', PrivateData);
+Parse.Object.registerSubclass('Profile', Profile);
 
 // Cloud Functions
 define('requestVerificationCode', async (request) => {
@@ -73,5 +77,25 @@ define('completePhoneVerification', async (request) => {
         return user.getSessionToken();
     } catch (error) {
         throw ParseError(ErrorCodes.badRequest, 'Invalid Verification Code', 'The provided verification code was invalid.');
+    }
+});
+
+// Before Save Hooks
+beforeSave('Profile', async (request) => {
+    const profile: Profile = (request as any).object;
+
+    if (!profile.realName) {
+        throw ParseError(ErrorCodes.badRequest, 'Real Name Required', 'You must provide a real name.');
+    }
+
+    profile.validateUsername();
+    profile.setSearchableUsername();
+
+    const query = new Parse.Query(Profile);
+    query.equalTo('username', profile.username);
+    const matchingProfile = await query.first({ useMasterKey: true });
+
+    if (matchingProfile && matchingProfile.id != profile.id) {
+        throw ParseError(ErrorCodes.badRequest, 'Username Taken', 'That username is taken.');
     }
 });
