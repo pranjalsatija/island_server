@@ -13,9 +13,6 @@ const cluster = true;
 const objectIdSize = 16;
 const revokeSessionOnPasswordReset = false;
 
-const dashboardURL = `http://localhost:${config.port}${config.dashboardMountPoint}`;
-const serverURL = `http://localhost:${config.port}${config.mountPoint}`;
-
 // Configure API.
 const server = express();
 const api = new ParseServer({ 
@@ -27,19 +24,20 @@ const api = new ParseServer({
     logLevel: config.logLevel,
     masterKey: config.masterKey,
     objectIdSize,
+    publicServerURL: config.publicServerURL,
     revokeSessionOnPasswordReset,
-    serverURL
+    serverURL: config.serverURL
 });
 
 server.use(config.mountPoint, api);
 
 if (config.environment == 'DEV') {
-    log.info(`DEV environment detected. Setting up dashboard at ${dashboardURL}.`);
+    log.info(`DEV environment detected. Setting up dashboard at ${config.dashboardURL}.`);
     const dashboard = ParseDashboard({
         // apps: [{ serverURL, appId, masterKey, appName }]
         apps: [
             {
-                serverURL,
+                serverURL: config.serverURL,
                 appId: config.appId,
                 masterKey: config.masterKey,
                 appName: config.appName,
@@ -54,5 +52,5 @@ if (config.environment == 'DEV') {
 
 
 server.listen(config.port, () => {
-    log.info(`Listening at ${serverURL}.`);
+    log.info(`Listening at ${config.serverURL}.`);
 });
