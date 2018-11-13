@@ -15,6 +15,9 @@ export const logLevel = process.env.LOG_LEVEL || missingOptionalConfig('LOG_LEVE
 export const mountPoint = process.env.MOUNT_POINT || missingOptionalConfig('MOUNT_POINT', '/parse');
 export const port = process.env.PORT || missingOptionalConfig('PORT', 1337);
 
+export const dashboardURL = `http://localhost:${port}${dashboardMountPoint}`;
+export const serverURL = `http://localhost:${port}${mountPoint}`;
+export const publicServerURL = process.env.PUBLIC_SERVER_URL || missingOptionalConfig('PUBLIC_SERVER_URL', null);
 
 // Load required config vars from process.env.
 let shouldAbort = false;
